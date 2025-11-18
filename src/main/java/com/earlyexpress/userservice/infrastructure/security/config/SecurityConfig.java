@@ -24,7 +24,6 @@ public class SecurityConfig {
 					.requestMatchers("/oauth2/**", "/login/**").permitAll()
 					.requestMatchers("/profile/**", "/password/**", "/role/**").hasRole("USER")
 					.anyRequest().permitAll())
-			.oauth2Login(c -> c.disable())
 			.oauth2ResourceServer(c -> c.jwt(jwt -> jwt.jwtAuthenticationConverter(conv))
 					.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
 					.accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
