@@ -9,7 +9,7 @@ public class LoginException extends GlobalException {
 		super(errorCode);
 	}
 
-	public LoginException(ErrorCode errorCode, Throwable cause) {
-		super(errorCode, cause);
+	public LoginException(ErrorCode errorCode, String message) {
+		super(errorCode, message);
 	}
 }

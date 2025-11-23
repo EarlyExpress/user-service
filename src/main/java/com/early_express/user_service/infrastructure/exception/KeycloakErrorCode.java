@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum KeycloakErrorCode implements ErrorCode {
-	KEYCLOAK_REGISTER_ERROR("KEYCLOAK_001", "회원 가입을 시도했지만 오류가 발생했습니다", 500);
+	KEYCLOAK_SERVER_ERROR("KEYCLOAK_001", "Keycloak 서버 내부에서 오류가 발생했습니다", 500);
 
 	private final String code;
 	private final String message;
