@@ -7,6 +7,7 @@ import com.early_express.user_service.domain.repository.UserRepository;
 import com.early_express.user_service.global.presentation.dto.ApiResponse;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakLogoutService;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakTokenGenerateService;
+import com.early_express.user_service.infrastructure.security.keycloak.KeycloakTokenRefreshService;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakUserRegisterService;
 import com.early_express.user_service.presentation.dto.UserRegister;
 import jakarta.transaction.Transactional;
@@ -22,6 +23,7 @@ public class AuthService {
 	private final KeycloakTokenGenerateService tokenGenerateService;
 	private final KeycloakUserRegisterService userRegisterService;
 	private final KeycloakLogoutService logoutService;
+	private final KeycloakTokenRefreshService tokenRefreshService;
 	private final UserRepository repository;
 
 	public TokenInfo generate(String username, String password) {
@@ -67,5 +69,9 @@ public class AuthService {
 		} catch (Exception e) {
 			return ApiResponse.fail("로그아웃 실패했습니다. 다시 시도 부탁드립니다.");
 		}
+	}
+
+	public TokenInfo refresh(String refreshToken) {
+		return tokenRefreshService.refresh(refreshToken);
 	}
 }

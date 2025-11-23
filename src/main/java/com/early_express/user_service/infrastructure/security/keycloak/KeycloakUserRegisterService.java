@@ -2,7 +2,6 @@ package com.early_express.user_service.infrastructure.security.keycloak;
 
 import com.early_express.user_service.application.dto.KeycloakRegisterDto;
 import com.early_express.user_service.domain.vo.SignupStatus;
-import com.early_express.user_service.infrastructure.exception.KeycloakErrorCode;
 import com.early_express.user_service.infrastructure.exception.KeycloakException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.early_express.user_service.infrastructure.exception.KeycloakErrorCode.KEYCLOAK_SERVER_ERROR;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class KeycloakUserRegisterService {
 		Response response = usersResource.create(user);
 
 		if (response.getStatus() != 201) {
-			throw new KeycloakException(KeycloakErrorCode.KEYCLOAK_REGISTER_ERROR);
+			throw new KeycloakException(KEYCLOAK_SERVER_ERROR);
 		}
 
 		// Keycloak한테서 uuid 받아오기
@@ -45,7 +46,7 @@ public class KeycloakUserRegisterService {
 			return keycloakId;
 		} catch (Exception e) {
 			usersResource.get(keycloakId).remove();
-			throw new KeycloakException(KeycloakErrorCode.KEYCLOAK_REGISTER_ERROR);
+			throw new KeycloakException(KEYCLOAK_SERVER_ERROR);
 		}
 	}
 
