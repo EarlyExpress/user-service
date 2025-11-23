@@ -72,7 +72,7 @@ class AuthServiceTest {
 		lenient().when(usersResource.get(anyString())).thenReturn(userResource);
 
 		KeycloakUserRegisterService userRegisterService = new KeycloakUserRegisterService(properties, keycloak);
-		authService = new AuthService(null, userRegisterService, logoutService, userRepository);
+		authService = new AuthService(null, userRegisterService, logoutService, null, userRepository);
 	}
 
 	@Test

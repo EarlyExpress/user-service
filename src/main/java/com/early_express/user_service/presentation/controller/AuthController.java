@@ -3,6 +3,7 @@ package com.early_express.user_service.presentation.controller;
 import com.early_express.user_service.application.AuthService;
 import com.early_express.user_service.application.dto.TokenInfo;
 import com.early_express.user_service.global.presentation.dto.ApiResponse;
+import com.early_express.user_service.presentation.dto.RefreshTokenRequest;
 import com.early_express.user_service.presentation.dto.TokenRequest;
 import com.early_express.user_service.presentation.dto.TokenResponse;
 import com.early_express.user_service.presentation.dto.UserRegister;
@@ -25,8 +26,7 @@ public class AuthController {
 	@PostMapping("web/public/login")
 	public ResponseEntity<ApiResponse<TokenResponse>> login(@Valid @RequestBody TokenRequest req) {
 		TokenInfo tokenInfo = authService.generate(req.username(), req.password());
-		TokenResponse tokenResponse = new TokenResponse(tokenInfo.access_token(), tokenInfo.expires_in(),
-				tokenInfo.refresh_expires_in(), tokenInfo.refresh_token(), tokenInfo.token_type());
+		TokenResponse tokenResponse = getTokenResponse(tokenInfo);
 
 		return ResponseEntity.ok().body(ApiResponse.success(tokenResponse, "로그인이 완료되었습니다"));
 	}
@@ -43,4 +43,19 @@ public class AuthController {
 		String userId = jwt.getClaimAsString("user_id");
 		return ResponseEntity.ok().body(authService.logout(userId));
 	}
+
+	// access_token, refresh_token 모두 갱신
+	@PostMapping("web/public/refresh")
+	public ResponseEntity<ApiResponse<TokenResponse>> refresh(@Valid @RequestBody RefreshTokenRequest req) {
+		TokenInfo tokenInfo = authService.refresh(req.refreshToken());
+		TokenResponse tokenResponse = getTokenResponse(tokenInfo);
+
+		return ResponseEntity.ok().body(ApiResponse.success(tokenResponse, "토큰이 갱신 되었습니다"));
+	}
+
+	private TokenResponse getTokenResponse(TokenInfo tokenInfo) {
+		return new TokenResponse(tokenInfo.access_token(), tokenInfo.expires_in(),
+				tokenInfo.refresh_expires_in(), tokenInfo.refresh_token(), tokenInfo.token_type());
+	}
+
 }
