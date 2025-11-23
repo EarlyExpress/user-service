@@ -50,8 +50,6 @@ public class SecurityConfig {
 						.requestMatchers("/h2-console/**").permitAll()
 						// 인증/인가
 						.requestMatchers("/web/public/**").permitAll()
-						// 사용자 정보 관련
-						.requestMatchers("/web/all/profile").permitAll()
 						// 나머지는 모두 인증 필요
 						.anyRequest().authenticated()
 				)
