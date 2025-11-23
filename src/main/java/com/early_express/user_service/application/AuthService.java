@@ -32,7 +32,7 @@ public class AuthService {
 
 		try {
 			// 사용자 Keycloak에 저장
-			 keycloakId = userRegisterService.registerUser(keycloakRegisterDto);
+			keycloakId = userRegisterService.registerUser(keycloakRegisterDto);
 
 			// 로컬 DB에 사용자 저장
 			User userEntity = User.builder()
