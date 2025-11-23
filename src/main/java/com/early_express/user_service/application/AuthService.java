@@ -4,6 +4,8 @@ import com.early_express.user_service.application.dto.KeycloakRegisterDto;
 import com.early_express.user_service.application.dto.TokenInfo;
 import com.early_express.user_service.domain.entity.User;
 import com.early_express.user_service.domain.repository.UserRepository;
+import com.early_express.user_service.global.presentation.dto.ApiResponse;
+import com.early_express.user_service.infrastructure.security.keycloak.KeycloakLogoutService;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakTokenGenerateService;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakUserRegisterService;
 import com.early_express.user_service.presentation.dto.UserRegister;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 	private final KeycloakTokenGenerateService tokenGenerateService;
 	private final KeycloakUserRegisterService userRegisterService;
+	private final KeycloakLogoutService logoutService;
 	private final UserRepository repository;
 
 	public TokenInfo generate(String username, String password) {
@@ -54,6 +57,15 @@ public class AuthService {
 				}
 			}
 			throw e;
+		}
+	}
+
+	public ApiResponse<Void> logout(String userId) {
+		try {
+			logoutService.logoutUser(userId);
+			return ApiResponse.success(null, "로그아웃 성공했습니다.");
+		} catch (Exception e) {
+			return ApiResponse.fail("로그아웃 실패했습니다. 다시 시도 부탁드립니다.");
 		}
 	}
 }
