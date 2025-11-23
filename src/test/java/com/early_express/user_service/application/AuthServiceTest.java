@@ -1,7 +1,9 @@
 package com.early_express.user_service.application;
 
 import com.early_express.user_service.domain.repository.UserRepository;
+import com.early_express.user_service.global.presentation.dto.ApiResponse;
 import com.early_express.user_service.infrastructure.exception.KeycloakException;
+import com.early_express.user_service.infrastructure.security.keycloak.KeycloakLogoutService;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakProperties;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakUserRegisterService;
 import com.early_express.user_service.presentation.dto.UserRegister;
@@ -19,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -43,6 +46,9 @@ class AuthServiceTest {
 	@Mock
 	private KeycloakProperties properties;
 
+	@Mock
+	private KeycloakLogoutService logoutService;
+
 	private AuthService authService;
 
 	private static final Response CREATED_RESPONSE;
@@ -60,13 +66,13 @@ class AuthServiceTest {
 
 	@BeforeEach
 	void setup() {
-		when(properties.getRealm()).thenReturn("test-realm");
-		when(keycloak.realm(anyString())).thenReturn(realmResource);
-		when(realmResource.users()).thenReturn(usersResource);
+		lenient().when(properties.getRealm()).thenReturn("test-realm");
+		lenient().when(keycloak.realm(anyString())).thenReturn(realmResource);
+		lenient().when(realmResource.users()).thenReturn(usersResource);
 		lenient().when(usersResource.get(anyString())).thenReturn(userResource);
 
 		KeycloakUserRegisterService userRegisterService = new KeycloakUserRegisterService(properties, keycloak);
-		authService = new AuthService(null, userRegisterService, userRepository);
+		authService = new AuthService(null, userRegisterService, logoutService, userRepository);
 	}
 
 	@Test
@@ -129,5 +135,36 @@ class AuthServiceTest {
 		verify(usersResource, times(1)).create(any());
 		verify(userResource, times(1)).resetPassword(any());
 		verify(userResource, times(1)).remove();
+	}
+
+	@Test
+	@DisplayName("로그아웃 성공")
+	void logout_success() {
+		// given
+		String userId = "ffaffaca-8b89-4700-a374-b526378cfedb";
+
+		// when
+		ApiResponse<Void> response = authService.logout(userId);
+
+		// then
+		verify(logoutService, times(1)).logoutUser(userId);
+		assertThat(response.isSuccess()).isTrue();
+		assertThat(response.getMessage()).isEqualTo("로그아웃 성공했습니다.");
+	}
+
+	@Test
+	@DisplayName("로그아웃 실패: Keycloak 서버 오류")
+	void logout_fail_keycloakError() {
+		// given
+		String userId = "ffaffaca-8b89-4700-a374-b526378cfedb";
+		doThrow(new RuntimeException("Keycloak 오류")).when(logoutService).logoutUser(userId);
+
+		// when
+		ApiResponse<Void> response = authService.logout(userId);
+
+		// then
+		verify(logoutService, times(1)).logoutUser(userId);
+		assertThat(response.isSuccess()).isFalse();
+		assertThat(response.getMessage()).isEqualTo("로그아웃 실패했습니다. 다시 시도 부탁드립니다.");
 	}
 }
