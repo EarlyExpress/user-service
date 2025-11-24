@@ -1,5 +1,6 @@
 package com.early_express.user_service.domain.entity;
 
+import com.early_express.user_service.domain.exception.UserDomainException;
 import com.early_express.user_service.domain.vo.Role;
 import com.early_express.user_service.domain.vo.SignupStatus;
 import com.early_express.user_service.global.infrastructure.entity.BaseEntity;
@@ -9,8 +10,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.early_express.user_service.domain.exception.UserDomainErrorCode.NOT_PENDING_USER;
+
 @Entity
-@Table(name = "p_user")
+@Table(
+	name = "p_user",
+	indexes = {
+		@Index(name = "idx_signup_status_created_at", columnList = "signupStatus, createdAt DESC"),
+		@Index(name = "idx_hub_id", columnList = "hubId"),
+		@Index(name = "idx_company_id", columnList = "companyId")
+	}
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User extends BaseEntity {
@@ -60,4 +70,16 @@ public class User extends BaseEntity {
 		this.companyId = companyId;
 	}
 
+	public void approveSignup(Role role) {
+		this.signupStatus = SignupStatus.ACCEPTED;
+		this.role = role;
+	}
+
+	public void rejectSignup(String deletedBy) {
+		if (this.signupStatus != SignupStatus.PENDING) {
+			throw new UserDomainException(NOT_PENDING_USER);
+		}
+		this.signupStatus = SignupStatus.REJECTED;
+		this.delete(deletedBy);
+	}
 }
