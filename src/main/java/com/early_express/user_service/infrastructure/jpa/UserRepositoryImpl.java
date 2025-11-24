@@ -2,9 +2,13 @@ package com.early_express.user_service.infrastructure.jpa;
 
 import com.early_express.user_service.domain.entity.User;
 import com.early_express.user_service.domain.repository.UserRepository;
+import com.early_express.user_service.domain.vo.SignupStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,5 +36,13 @@ public class UserRepositoryImpl implements UserRepository {
 		return repository.existsByUsername(username);
 	}
 
+	@Override
+	public Page<User> findBySignupStatus(SignupStatus signupStatus, Pageable pageable) {
+		return repository.findBySignupStatus(signupStatus, pageable);
+	}
 
+	@Override
+	public Page<User> findBySignupStatusOrderByCreatedAtDesc(SignupStatus signupStatus, Pageable pageable) {
+		return repository.findBySignupStatusOrderByCreatedAtDesc(signupStatus, pageable);
+	}
 }
