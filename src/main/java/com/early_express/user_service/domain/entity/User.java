@@ -83,4 +83,13 @@ public class User extends BaseEntity {
 		this.signupStatus = SignupStatus.REJECTED;
 		this.delete(deletedBy);
 	}
+
+	public void updateProfile(String username, String email, String name, String slackId, String phoneNumber, String address) {
+		if (username != null) this.username = username;
+		if (email != null) this.email = email;
+		if (name != null) this.name = name;
+		if (slackId != null) this.slackId = slackId;
+		if (phoneNumber != null) this.phoneNumber = phoneNumber;
+		if (address != null) this.address = address;
+	}
 }
