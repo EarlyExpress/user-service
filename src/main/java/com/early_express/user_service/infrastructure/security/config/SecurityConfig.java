@@ -55,8 +55,9 @@ public class SecurityConfig {
 						// H2 Console 추가
 						.requestMatchers("/h2-console/**").permitAll()
 						// 인증/인가
-						.requestMatchers("/web/public/**").permitAll()
-						.requestMatchers("/web/master-hub-manager/**").hasAnyRole("MASTER", "HUB_MANAGER")
+						.requestMatchers("/auth/web/public/**").permitAll()
+						.requestMatchers("/auth/web/master-hub-manager/**").hasAnyRole("MASTER", "HUB_MANAGER")
+						.requestMatchers("/user/web/master/**").hasRole("MASTER")
 						// 나머지는 모두 인증 필요
 						.anyRequest().authenticated()
 				)
