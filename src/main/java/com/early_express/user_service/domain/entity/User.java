@@ -61,13 +61,14 @@ public class User extends BaseEntity {
 	private String address;
 
 	@Builder
-	private User(String keycloakId, String username, String name, String email, String hubId, String companyId) {
+	private User(String keycloakId, String username, String name, String email, String hubId, String companyId, String slackId) {
 		this.keycloakId = keycloakId;
 		this.username = username;
 		this.name = name;
 		this.email = email;
 		this.hubId = hubId;
 		this.companyId = companyId;
+		this.slackId = slackId;
 	}
 
 	public void approveSignup(Role role) {

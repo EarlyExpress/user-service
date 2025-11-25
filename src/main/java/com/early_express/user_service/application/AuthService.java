@@ -48,7 +48,9 @@ public class AuthService {
 								  .email(dto.email())
 								  .name(dto.name())
 								  .hubId(dto.hubId())
-								  .companyId(dto.companyId()).build();
+								  .companyId(dto.companyId())
+								  .slackId(dto.slackId())
+								  .build();
 			repository.save(userEntity);
 		} catch (Exception e) {
 			// DB 저장 실패 시 Keycloak 서버에서 사용자 삭제
