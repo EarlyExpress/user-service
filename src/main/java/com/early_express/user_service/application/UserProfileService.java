@@ -8,12 +8,15 @@ import com.early_express.user_service.domain.entity.User;
 import com.early_express.user_service.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserProfileService {
 	private final UserRepository userRepository;
 
+	@Transactional(readOnly = true)
 	public UserProfileDto getUserProfile(String userId) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
