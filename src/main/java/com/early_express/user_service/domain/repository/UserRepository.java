@@ -5,11 +5,14 @@ import com.early_express.user_service.domain.vo.SignupStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
 	void save(User user);
+
+	Page<User> findAll(Pageable pageable);
+
+	void deleteAll();
 
 	Optional<User> findById(String id);
 

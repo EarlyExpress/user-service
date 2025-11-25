@@ -14,12 +14,13 @@ import static com.early_express.user_service.domain.exception.UserDomainErrorCod
 
 @Entity
 @Table(
-	name = "p_user",
-	indexes = {
-		@Index(name = "idx_signup_status_created_at", columnList = "signupStatus, createdAt DESC"),
-		@Index(name = "idx_hub_id", columnList = "hubId"),
-		@Index(name = "idx_company_id", columnList = "companyId")
-	}
+		name = "p_user",
+		indexes = {
+				@Index(name = "idx_signup_status_created_at", columnList = "signupStatus, createdAt DESC"),
+				@Index(name = "idx_hub_id", columnList = "hubId"),
+				@Index(name = "idx_company_id", columnList = "companyId"),
+				@Index(name = "idx_created_at", columnList = "createdAt")
+		}
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -82,5 +83,28 @@ public class User extends BaseEntity {
 		}
 		this.signupStatus = SignupStatus.REJECTED;
 		this.delete(deletedBy);
+	}
+
+	public void updateProfile(String username, String email, String name, String slackId, String phoneNumber, String address) {
+		if (username != null) this.username = username;
+		if (email != null) this.email = email;
+		if (name != null) this.name = name;
+		if (slackId != null) this.slackId = slackId;
+		if (phoneNumber != null) this.phoneNumber = phoneNumber;
+		if (address != null) this.address = address;
+	}
+
+	public void updateProfileAdmin(String username, String email, String name, Role role, SignupStatus signupStatus,
+								   String slackId, String hubId, String companyId, String phoneNumber, String address) {
+		if (username != null) this.username = username;
+		if (email != null) this.email = email;
+		if (name != null) this.name = name;
+		if (role != null) this.role = role;
+		if (signupStatus != null) this.signupStatus = signupStatus;
+		if (slackId != null) this.slackId = slackId;
+		if (hubId != null) this.hubId = hubId;
+		if (companyId != null) this.companyId = companyId;
+		if (phoneNumber != null) this.phoneNumber = phoneNumber;
+		if (address != null) this.address = address;
 	}
 }

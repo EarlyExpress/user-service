@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("web/master-hub-manager/signup-requests")
+@RequestMapping("/auth/web/master-hub-manager/signup-requests")
 @RequiredArgsConstructor
 public class AuthAdminController {
 	private final SignupApprovalService signupApprovalService;

@@ -22,6 +22,11 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
+	public Page<User> findAll(Pageable pageable) {
+		return repository.findAll(pageable);
+	}
+
+	@Override
 	public Optional<User> findById(String id) {
 		return repository.findById(id);
 	}
@@ -45,4 +50,11 @@ public class UserRepositoryImpl implements UserRepository {
 	public Page<User> findBySignupStatusOrderByCreatedAtDesc(SignupStatus signupStatus, Pageable pageable) {
 		return repository.findBySignupStatusOrderByCreatedAtDesc(signupStatus, pageable);
 	}
+
+	@Override
+	public void deleteAll() {
+		repository.deleteAll();
+	}
+
+
 }
