@@ -1,0 +1,31 @@
+package com.early_express.user_service.application;
+
+import com.early_express.user_service.application.dto.UserProfileDto;
+import com.early_express.user_service.application.dto.UserUpdateProfileDto;
+import com.early_express.user_service.application.exception.UserErrorCode;
+import com.early_express.user_service.application.exception.UserException;
+import com.early_express.user_service.domain.entity.User;
+import com.early_express.user_service.domain.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class UserProfileService {
+	private final UserRepository userRepository;
+
+	public UserProfileDto getUserProfile(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+		return new UserProfileDto(user.getUsername(), user.getEmail(), user.getName(), user.getRole().getDescription(),
+				user.getSlackId(), user.getPhoneNumber(), user.getAddress());
+	}
+
+	public UserProfileDto updateUserProfile(UserUpdateProfileDto dto) {
+		User user = userRepository.findById(dto.userId()).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+		user.updateProfile(dto.username(), dto.email(), dto.name(), dto.slackId(),dto.phoneNumber(), dto.address());
+
+		return new UserProfileDto(user.getUsername(), user.getEmail(), user.getName(), user.getRole().getDescription(),
+				user.getSlackId(), user.getPhoneNumber(), user.getAddress());
+	}
+}
