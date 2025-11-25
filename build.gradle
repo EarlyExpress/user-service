@@ -74,6 +74,8 @@ dependencies {
     implementation 'com.github.loki4j:loki-logback-appender:2.0.0'
     // Prometheus 메트릭 수집
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    // 추가: Prometheus Pushgateway (push 방식)
+    implementation 'io.prometheus:simpleclient_pushgateway:0.16.0'
 
     // ===== Database =====
     // JPA ORM 지원
