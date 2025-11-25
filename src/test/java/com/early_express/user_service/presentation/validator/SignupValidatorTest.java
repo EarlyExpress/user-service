@@ -25,7 +25,7 @@ class SignupValidatorTest {
 	private UserRepository repository;
 
 	private UserRegister createDto(String username, String password, String confirmPassword) {
-		return new UserRegister(username, password, confirmPassword, "test@example.com", "테스트", null, null);
+		return new UserRegister(username, password, confirmPassword, "test@example.com", "테스트", null, null, null);
 	}
 
 	@Test

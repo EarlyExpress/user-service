@@ -60,7 +60,7 @@ class AuthServiceTest {
 
 		DEFAULT_DTO = new UserRegister(
 				"test1234", "Password1!", "Password1!",
-				"test@example.com", "테스트", "2c238593-3265-4462-bd73-2614f8ea9de4", null
+				"test@example.com", "테스트", "2c238593-3265-4462-bd73-2614f8ea9de4", null, null
 		);
 	}
 

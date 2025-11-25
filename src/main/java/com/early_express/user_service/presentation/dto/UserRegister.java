@@ -23,6 +23,7 @@ public record UserRegister(
 		@NotBlank(message = "이름을 입력해주세요")
 		String name,
 		String companyId,
-		String hubId
+		String hubId,
+		String slackId
 ) {
 }

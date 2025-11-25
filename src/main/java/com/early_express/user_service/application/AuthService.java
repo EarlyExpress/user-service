@@ -10,10 +10,11 @@ import com.early_express.user_service.infrastructure.security.keycloak.KeycloakT
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakTokenRefreshService;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakUserRegisterService;
 import com.early_express.user_service.presentation.dto.UserRegister;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Service
@@ -26,6 +27,7 @@ public class AuthService {
 	private final KeycloakTokenRefreshService tokenRefreshService;
 	private final UserRepository repository;
 
+	@Transactional(readOnly = true)
 	public TokenInfo generate(String username, String password) {
 		return tokenGenerateService.generate(username, password);
 	}
@@ -46,7 +48,9 @@ public class AuthService {
 								  .email(dto.email())
 								  .name(dto.name())
 								  .hubId(dto.hubId())
-								  .companyId(dto.companyId()).build();
+								  .companyId(dto.companyId())
+								  .slackId(dto.slackId())
+								  .build();
 			repository.save(userEntity);
 		} catch (Exception e) {
 			// DB 저장 실패 시 Keycloak 서버에서 사용자 삭제
@@ -62,6 +66,7 @@ public class AuthService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public ApiResponse<Void> logout(String userId) {
 		try {
 			logoutService.logoutUser(userId);
@@ -71,6 +76,7 @@ public class AuthService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public TokenInfo refresh(String refreshToken) {
 		return tokenRefreshService.refresh(refreshToken);
 	}
