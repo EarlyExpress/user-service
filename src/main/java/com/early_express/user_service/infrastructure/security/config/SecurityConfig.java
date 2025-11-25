@@ -1,6 +1,8 @@
 package com.early_express.user_service.infrastructure.security.config;
 
+import com.early_express.user_service.global.infrastructure.security.filter.UserHeaderAuthenticationFilter;
 import com.early_express.user_service.infrastructure.security.keycloak.KeycloakClientRoleConverter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -11,11 +13,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+	private final UserHeaderAuthenticationFilter userHeaderAuthenticationFilter;
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		// JWT → Authentication으로 변환
@@ -50,12 +56,14 @@ public class SecurityConfig {
 						.requestMatchers("/h2-console/**").permitAll()
 						// 인증/인가
 						.requestMatchers("/web/public/**").permitAll()
+						.requestMatchers("/web/master-hub-manager/**").hasAnyRole("MASTER", "HUB_MANAGER")
 						// 나머지는 모두 인증 필요
 						.anyRequest().authenticated()
 				)
 				.oauth2ResourceServer(c -> c.jwt(jwt -> jwt.jwtAuthenticationConverter(conv))
 											.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-											.accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
+											.accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+				.addFilterAfter(userHeaderAuthenticationFilter, BearerTokenAuthenticationFilter.class);
 
 		return http.build();
 	}
