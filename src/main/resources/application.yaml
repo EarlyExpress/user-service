@@ -108,3 +108,5 @@ client:
     url: ${HUB_DRIVER_SERVICE_URL}
   last-mile-driver-service:
     url: ${LAST_MILE_DRIVER_SERVICE_URL}
+  company:
+    url: ${COMPANY_MANAGER_SERVICE_URL}

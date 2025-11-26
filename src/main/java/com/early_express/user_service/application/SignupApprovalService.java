@@ -10,6 +10,8 @@ import com.early_express.user_service.global.common.utils.UuidUtils;
 import com.early_express.user_service.global.presentation.dto.PageResponse;
 import com.early_express.user_service.infrastructure.dto.CreateHubDriverRequest;
 import com.early_express.user_service.infrastructure.dto.CreateLastMileDriverRequest;
+import com.early_express.user_service.infrastructure.dto.CreateManagerRequest;
+import com.early_express.user_service.infrastructure.feign.CompanyFeignClient;
 import com.early_express.user_service.infrastructure.feign.HubDriverFeignClient;
 import com.early_express.user_service.infrastructure.feign.LastMileDriverFeignClient;
 import com.early_express.user_service.infrastructure.messaging.event.SignupAcceptedEvent;
@@ -39,6 +41,7 @@ public class SignupApprovalService {
 	private final UserEventProducer userEventProducer;
 	private final HubDriverFeignClient hubDriverFeignClient;
 	private final LastMileDriverFeignClient lastMileDriverFeignClient;
+	private final CompanyFeignClient companyFeignClient;
 
 	@Transactional(readOnly = true)
 	public PageResponse<SignupRequestResponse> getPendingSignupRequests(Pageable pageable) {
@@ -57,12 +60,14 @@ public class SignupApprovalService {
 			// 로컬 DB에서 가입 상태 업데이트
 			user.approveSignup(role);
 
-			// 직원 생성 요청
+			// 직원 생성 요청 (업체 배송 담당자, 허브 배송 담당자, 업체 담당자만 회원가입을 한다고 가정)
 			if (role == Role.DELIVERY) {
 				if (!StringUtils.hasText(user.getHubId()))
 					hubDriverFeignClient.createDriver(new CreateHubDriverRequest(userId, user.getName()));
 				else
 					lastMileDriverFeignClient.createDriver(new CreateLastMileDriverRequest(user.getHubId(), userId, user.getName()));
+			} else if (role == Role.COMPANY) {
+				companyFeignClient.createManager(new CreateManagerRequest(user.getCompanyId(), userId, user.getName()));
 			}
 
 			// Keycloak 서버에서 활성화
