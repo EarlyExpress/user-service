@@ -1,6 +1,5 @@
 package com.early_express.user_service.infrastructure.messaging.producer;
 
-import com.early_express.user_service.infrastructure.messaging.event.EmployeeCreatedEvent;
 import com.early_express.user_service.infrastructure.messaging.event.SignupAcceptedEvent;
 import com.early_express.user_service.infrastructure.messaging.event.SignupRejectedEvent;
 import lombok.RequiredArgsConstructor;
@@ -60,27 +59,6 @@ public class UserEventProducer {
 			} else {
 				log.error("SignupRejectedEvent 발행 실패: email={}, error={}",
 						event.email(), ex.getMessage(), ex);
-			}
-		});
-	}
-
-	public void publishEmployeeCreated(EmployeeCreatedEvent event) {
-		String topic = applicationName + "-CREATE-EMPLOYEE-" + EVENTS_TOPIC_SUFFIX;
-
-		CompletableFuture<SendResult<String, Object>> future =
-				kafkaTemplate.send(topic, event.userId(), event);
-
-		future.whenComplete((result, ex) -> {
-			if (ex == null) {
-				log.info("EmployeeCreatedEvent 발행 성공: userId={}, role={}, createdBy={}, partition={}, offset={}",
-						event.userId(),
-						event.role(),
-						event.approvedByUUID(),
-						result.getRecordMetadata().partition(),
-						result.getRecordMetadata().offset());
-			} else {
-				log.error("EmployeeCreatedEvent 발행 실패: userId={}, error={}",
-						event.userId(), ex.getMessage(), ex);
 			}
 		});
 	}

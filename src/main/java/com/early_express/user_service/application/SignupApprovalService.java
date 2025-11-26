@@ -8,7 +8,10 @@ import com.early_express.user_service.domain.vo.SignupStatus;
 import com.early_express.user_service.global.common.utils.PageUtils;
 import com.early_express.user_service.global.common.utils.UuidUtils;
 import com.early_express.user_service.global.presentation.dto.PageResponse;
-import com.early_express.user_service.infrastructure.messaging.event.EmployeeCreatedEvent;
+import com.early_express.user_service.infrastructure.dto.CreateHubDriverRequest;
+import com.early_express.user_service.infrastructure.dto.CreateLastMileDriverRequest;
+import com.early_express.user_service.infrastructure.feign.HubDriverFeignClient;
+import com.early_express.user_service.infrastructure.feign.LastMileDriverFeignClient;
 import com.early_express.user_service.infrastructure.messaging.event.SignupAcceptedEvent;
 import com.early_express.user_service.infrastructure.messaging.event.SignupRejectedEvent;
 import com.early_express.user_service.infrastructure.messaging.producer.UserEventProducer;
@@ -34,6 +37,8 @@ public class SignupApprovalService {
 	private final UserRepository userRepository;
 	private final KeycloakUserRegisterService userRegisterService;
 	private final UserEventProducer userEventProducer;
+	private final HubDriverFeignClient hubDriverFeignClient;
+	private final LastMileDriverFeignClient lastMileDriverFeignClient;
 
 	@Transactional(readOnly = true)
 	public PageResponse<SignupRequestResponse> getPendingSignupRequests(Pageable pageable) {
@@ -41,7 +46,7 @@ public class SignupApprovalService {
 		return PageUtils.toPageResponse(userPages, SignupRequestResponse::from);
 	}
 
-	public void approveSignup(String userId, Role role, String approvedByEmail, String approvedByUUID) {
+	public void approveSignup(String userId, Role role, String approvedByEmail) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
 		if (user.getSignupStatus() == SignupStatus.ACCEPTED) {
@@ -49,25 +54,31 @@ public class SignupApprovalService {
 		}
 
 		try {
+			// 로컬 DB에서 가입 상태 업데이트
 			user.approveSignup(role);
+
+			// 직원 생성 요청
+			if (role == Role.DELIVERY) {
+				if (!StringUtils.hasText(user.getHubId()))
+					hubDriverFeignClient.createDriver(new CreateHubDriverRequest(userId, user.getName()));
+				else
+					lastMileDriverFeignClient.createDriver(new CreateLastMileDriverRequest(user.getHubId(), userId, user.getName()));
+			}
+
+			// Keycloak 서버에서 활성화
 			userRegisterService.activateUser(userId, role);
 		} catch (Exception e) {
-			log.error("로그 오류: ", e);
+			log.error("회원가입 승인 오류: ", e);
 			throw new UserException(SIGNUP_APPROVAL_FAILED);
 		}
 
+		// 알림 서비스에 이벤트 발행
 		if (StringUtils.hasText(user.getSlackId())) {
 			SignupAcceptedEvent signupAcceptedEvent = new SignupAcceptedEvent(UuidUtils.generate(),
 					"SIGNUP_ACCEPTED", user.getName(), user.getEmail(), user.getRole().getDescription(),
 					user.getSlackId(), LocalDateTime.now(), approvedByEmail);
 
 			userEventProducer.publishSignupAccepted(signupAcceptedEvent);
-
-			EmployeeCreatedEvent employeeCreatedEvent = new EmployeeCreatedEvent(UuidUtils.generate(),
-					"EMPLOYEE_CREATED", user.getKeycloakId(), user.getRole().name(), user.getHubId(),
-					user.getCompanyId(), LocalDateTime.now(), approvedByUUID);
-
-			userEventProducer.publishEmployeeCreated(employeeCreatedEvent);
 		}
 	}
 
