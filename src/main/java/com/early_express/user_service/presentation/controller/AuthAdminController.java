@@ -41,9 +41,8 @@ public class AuthAdminController {
 	public ResponseEntity<ApiResponse<Void>> approveSignup(@PathVariable String userId,
 														   @Valid @RequestBody ApproveSignupRequest request,
 														   @AuthenticationPrincipal Jwt jwt) {
-		String approvedByUUID = jwt.getClaimAsString("user_id");
 		String approvedByEmail = jwt.getClaimAsString("email");
-		signupApprovalService.approveSignup(userId, request.role(), approvedByEmail, approvedByUUID);
+		signupApprovalService.approveSignup(userId, request.role(), approvedByEmail);
 		return ResponseEntity.ok().body(ApiResponse.success(null, "회원가입 요청 승인이 완료됐습니다"));
 	}
 
