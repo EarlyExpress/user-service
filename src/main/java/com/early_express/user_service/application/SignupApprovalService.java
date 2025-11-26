@@ -63,9 +63,9 @@ public class SignupApprovalService {
 			// 직원 생성 요청 (업체 배송 담당자, 허브 배송 담당자, 업체 담당자만 회원가입을 한다고 가정)
 			if (role == Role.DELIVERY) {
 				if (!StringUtils.hasText(user.getHubId()))
-					hubDriverFeignClient.createDriver(new CreateHubDriverRequest(userId, user.getName()));
+					hubDriverFeignClient.createDriver(new CreateHubDriverRequest(userId, user.getName(), user.getSlackId()));
 				else
-					lastMileDriverFeignClient.createDriver(new CreateLastMileDriverRequest(user.getHubId(), userId, user.getName()));
+					lastMileDriverFeignClient.createDriver(new CreateLastMileDriverRequest(user.getHubId(), userId, user.getName(), user.getSlackId()));
 			} else if (role == Role.COMPANY) {
 				companyFeignClient.createManager(new CreateManagerRequest(user.getCompanyId(), userId, user.getName()));
 			}
