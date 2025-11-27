@@ -20,15 +20,13 @@ public class UserProfileService {
 	public UserProfileDto getUserProfile(String userId) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-		return new UserProfileDto(user.getUsername(), user.getEmail(), user.getName(), user.getRole().getDescription(),
-				user.getSlackId(), user.getPhoneNumber(), user.getAddress());
+		return UserProfileDto.from(user);
 	}
 
 	public UserProfileDto updateUserProfile(UserUpdateProfileDto dto) {
 		User user = userRepository.findById(dto.userId()).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 		user.updateProfile(dto.username(), dto.email(), dto.name(), dto.slackId(),dto.phoneNumber(), dto.address());
 
-		return new UserProfileDto(user.getUsername(), user.getEmail(), user.getName(), user.getRole().getDescription(),
-				user.getSlackId(), user.getPhoneNumber(), user.getAddress());
+		return UserProfileDto.from(user);
 	}
 }
