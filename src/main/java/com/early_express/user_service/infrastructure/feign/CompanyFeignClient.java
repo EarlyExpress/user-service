@@ -6,9 +6,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name="company-service", url="${client.company.url}")
+@FeignClient(name="company-service")
 public interface CompanyFeignClient {
 
-	@PostMapping("/v1/company/internal/manager")
+	@PostMapping("/internal/companies/{companyId}/owner")
 	void createManager(@RequestBody CreateManagerRequest request);
 }

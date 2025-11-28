@@ -102,11 +102,3 @@ springdoc:
   # 실제 서버 URL 설정 (프록시 URL)
   server:
     url: http://localhost:4000
-
-client:
-  hub-driver-service:
-    url: ${HUB_DRIVER_SERVICE_URL}
-  last-mile-driver-service:
-    url: ${LAST_MILE_DRIVER_SERVICE_URL}
-  company:
-    url: ${COMPANY_MANAGER_SERVICE_URL}

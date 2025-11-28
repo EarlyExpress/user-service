@@ -5,9 +5,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name="hub-driver-service", url="${client.hub-driver-service.url}")
+@FeignClient(name="hub-driver-service")
 public interface HubDriverFeignClient {
 
-	@PostMapping("/v1/hub-driver/internal/drivers")
+	@PostMapping("/internal/drivers")
 	void createDriver(@RequestBody CreateHubDriverRequest request);
 }

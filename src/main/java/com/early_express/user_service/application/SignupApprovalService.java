@@ -67,7 +67,7 @@ public class SignupApprovalService {
 				else
 					lastMileDriverFeignClient.createDriver(new CreateLastMileDriverRequest(user.getHubId(), userId, user.getName(), user.getSlackId()));
 			} else if (role == Role.COMPANY) {
-				companyFeignClient.createManager(new CreateManagerRequest(user.getCompanyId(), userId, user.getName()));
+				companyFeignClient.createManager(new CreateManagerRequest(userId));
 			}
 
 			// Keycloak 서버에서 활성화
